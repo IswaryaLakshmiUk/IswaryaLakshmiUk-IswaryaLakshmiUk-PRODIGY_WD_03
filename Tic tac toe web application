@@ -1,0 +1,110 @@
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Tic Tac Toe</h1>
+    <div id="game-board">
+      <!-- Grid cells will be generated dynamically with JavaScript -->
+    </div>
+    <button id="reset-btn">Reset</button>
+    <p id="status"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+CSS
+.container {
+  text-align: center;
+}
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-gap: 5px;
+  margin: 20px auto;
+}
+.cell {
+  width: 100px;
+  height: 100px;
+  border: 2px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  cursor: pointer;
+}
+
+#reset-btn {
+  margin-top: 20px;
+}
+
+p#status {
+  font-weight: bold;
+}
+
+JAVASCRIPT 
+document.addEventListener('DOMContentLoaded', () => {
+  const cells = document.querySelectorAll('.cell');
+  const resetButton = document.getElementById('reset-btn');
+  const status = document.getElementById('status');
+
+  let currentPlayer = 'X';
+  let gameActive = true;
+  let gameState = ['', '', '', '', '', '', '', '', ''];
+
+  const checkWinner = () => {
+    const winningConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    for (let condition of winningConditions) {
+      const [a, b, c] = condition;
+      if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+        gameActive = false;
+        status.textContent = `${currentPlayer} wins!`;
+        break;
+      }
+    }
+
+    if (!gameState.includes('') && gameActive) {
+      gameActive = false;
+      status.textContent = 'It\'s a draw!';
+    }
+  };
+
+  const handleCellClick = (e) => {
+    const cellIndex = parseInt(e.target.dataset.index);
+    if (gameState[cellIndex] || !gameActive) return;
+
+    gameState[cellIndex] = currentPlayer;
+    e.target.textContent = currentPlayer;
+    checkWinner();
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+  };
+
+  const resetGame = () => {
+    currentPlayer = 'X';
+    gameActive = true;
+    gameState = ['', '', '', '', '', '', '', '', ''];
+    status.textContent = '';
+    cells.forEach(cell => {
+      cell.textContent = '';
+    });
+  };
+
+  cells.forEach(cell => {
+    cell.addEventListener('click', handleCellClick);
+  });
+
+  resetButton.addEventListener('click', resetGame);
+});
